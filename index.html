@@ -34,28 +34,33 @@
 										<tr>
 											<td>
 												<p>交易总金额</p>
-												<p><span id="listedCompany">0</span></p>
-												<p>一季度同比增长%</p>
+												<p><span id="listedCompany">9,205,366,423</span></p>
+												<p>较2023同比增长18.24%</p>
+												<p>较2019同比增长190.28%</p>
 											</td>
 											<td>
 												<p>交易总笔数</p>
-												<p><span id="listedSecurity">0</span></p>
-												<p>一季度同比增长%</p>
+												<p><span id="listedSecurity">111,362,813</span></p>
+												<p>较2023同比增长36.00%</p>
+												<p>较2019同比增长148.03%</p>
 											</td>
 											<td>
 												<p>笔均消费金额</p>
-												<p><span id="totalMarket">0</span></p>
-												<p>一季度同比增长%</p>
+												<p><span id="totalMarket">82.66</span></p>
+												<p>较2023同比增长-13.06%</p>
+												<p>较2019同比增长17.04%</p>
 											</td>
 											<td>
 												<p>店均交易金额</p>
-												<p><span id="shRatio">0</span></p>
-												<p>一季度同比增长%</p>
+												<p><span id="shRatio">75,171.54</span></p>
+												<p>较2023同比增长-4.28%</p>
+												<p>较2019同比增长70.05%</p>
 											</td>
 											<td>
 												<p>店均交易笔数</p>
-												<p><span id="circulationMarket">0</span></p>
-												<p>一季度同比增长%</p>
+												<p><span id="circulationMarket">907.76</span></p>
+												<p>较2023同比增长11.09%</p>
+												<p>较2019同比增长45.50%</p>
 											</td>
 
 										</tr>
@@ -335,20 +340,20 @@
 			})();
 
 			//获取统计数据
-			$.ajax({
-				url: "data/count-data.json",
-				dataType: "json"
-			}).done(function (data) {
-				//console.log('Data: ', data);
-				rollNum("listedCompany", 0, data.listed_companies_total);
-				rollNum("listedSecurity", 0, data.listed_securities_total);
-				rollNum("totalMarket", 0, data.total_market_value, 2);
-				rollNum("circulationMarket", 0, data.circulation_market_value, 0);
-				rollNum("shRatio", 0, data.sh_pe_ratio, 2);
-				rollNum("szRatio", 0, data.sz_pe_ratio, 2);
-			}).fail(function (jqXHR, textStatus) {
-				console.log("Ajax Error: ", textStatus);
-			});
+			// $.ajax({
+			// 	url: "data/count-data.json",
+			// 	dataType: "json"
+			// }).done(function (data) {
+			// 	//console.log('Data: ', data);
+			// 	rollNum("listedCompany", 0, data.listed_companies_total);
+			// 	rollNum("listedSecurity", 0, data.listed_securities_total);
+			// 	rollNum("totalMarket", 0, data.total_market_value, 2);
+			// 	rollNum("circulationMarket", 0, data.circulation_market_value, 0);
+			// 	rollNum("shRatio", 0, data.sh_pe_ratio, 2);
+			// 	rollNum("szRatio", 0, data.sz_pe_ratio, 2);
+			// }).fail(function (jqXHR, textStatus) {
+			// 	console.log("Ajax Error: ", textStatus);
+			// });
 
 
 			// //获取地域分布数据

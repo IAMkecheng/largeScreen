@@ -745,7 +745,7 @@ function drawScatterplot() {
                 let index = param.value[3]
                 // console.log(index, dataBJ[index]);
                 // prettier-ignore
-                return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + dataBJ[index].name
                     + '</div>'
                     + '消费笔数：' + Math.round(dataBJ[index].xValue) + '<br>'
@@ -820,13 +820,45 @@ function drawScatterplot() {
                 name: '增长',
                 type: 'scatter',
                 itemStyle: itemStyle,
-                data: filteredUp
+                data: filteredUp,
+                label: {
+                    show: true,
+                    formatter: param => {
+                        let index = param.value[3]
+                        return dataBJ[index].name;
+                    },
+                    position: 'right',
+                    // 文本样式
+                    textStyle: {
+                        // 字体大小
+                        fontSize: 12,
+                        fontFamily: 'Microsoft YaHei',
+                        // 字体颜色
+                        color: 'white'
+                    }
+                }
             },
             {
                 name: '下降',
                 type: 'scatter',
                 itemStyle: itemStyle,
-                data: filteredDown
+                data: filteredDown,
+                label: {
+                    show: true,
+                    formatter: param => {
+                        let index = param.value[3]
+                        return dataBJ[index].name;
+                    },
+                    position: 'right',
+                    // 文本样式
+                    textStyle: {
+                        // 字体大小
+                        fontSize: 12,
+                        fontFamily: 'Microsoft YaHei',
+                        // 字体颜色
+                        color: 'white'
+                    }
+                }
             }
         ]
     };
