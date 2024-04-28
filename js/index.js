@@ -675,4 +675,166 @@ function drawBubbleChart() {
         myChart.resize();
     })
 }
-drawBubbleChart()
+// drawBubbleChart()
+
+function drawScatterplot() {
+    var chartDom = document.getElementById('bubble-chart');
+    var myChart = echarts.init(chartDom);
+    var option;
+    const dataBJ = [
+        { name: '怀柔区', xValue: 38.4, yValue: 16.63853, rate: 40.322563, sign: 0 },
+        { name: '密云区', xValue: 47.9, yValue: 56.849551, rate: 20.382999, sign: 0 },
+        { name: '昌平区', xValue: 196.3, yValue: 26.237832, rate: 10.226854, sign: 1 },
+        { name: '顺义区', xValue: 102, yValue: 46.663242, rate: 60.1362, sign: 1 },
+        { name: '平谷区', xValue: 42.3, yValue: 57.128025, rate: 20.147115, sign: 1 },
+        { name: '门头沟区', xValue: 30.8, yValue: 76.108179, rate: 9.94648, sign: 0 },
+        { name: '海淀区', xValue: 369.4, yValue: 45.304872, rate: 99.96553, sign: 0 },
+        { name: '石景山区', xValue: 65.2, yValue: 36.229612, rate: 29.912017, sign: 0 },
+        { name: '西城区', xValue: 129.8, yValue: 77.372397, rate: 45.918561, sign: 0 },
+        { name: '东城区', xValue: 90.5, yValue: 55.42272, rate: 23.934579, sign: 1 },
+        { name: '朝阳区', xValue: 395.5, yValue: 33.449767, rate: 12.927254, sign: 0 },
+        { name: '大兴区', xValue: 156.2, yValue: 54.348053, rate: 3.732833, sign: 1 },
+        { name: '房山区', xValue: 104.6, yValue: 37.149892, rate: 7.755039, sign: 0 },
+        { name: '丰台区', xValue: 232.4, yValue: 49.293105, rate: 10.865042, sign: 0 },
+        { name: '延庆区', xValue: 84.6, yValue: 59.293105, rate: 29.865042, sign: 0 },
+        { name: '通州区', xValue: 32.4, yValue: 78.293105, rate: 39.865042, sign: 0 }
+    ]
+    let filteredUp = [], filteredDown = [];
+    for (let i = 0; i < dataBJ.length; i++) {
+        if (dataBJ[i].sign === 1) {
+            filteredUp.push([dataBJ[i].xValue, dataBJ[i].yValue, dataBJ[i].rate, i])
+        } else {
+            filteredDown.push([dataBJ[i].xValue, dataBJ[i].yValue, dataBJ[i].rate, i])
+        }
+    }
+    console.log(filteredUp, filteredDown);
+    const itemStyle = {
+        opacity: 0.8,
+        shadowBlur: 10,
+        shadowOffsetX: 0,
+        shadowOffsetY: 0,
+        shadowColor: 'rgba(0,0,0,0.3)'
+    };
+    option = {
+        color: ['#FF0000', '#00FF00'],
+        legend: {
+            top: 10,
+            data: ['增长', '下降'],
+            textStyle: {
+                fontSize: 16,
+                color: "white"
+            }
+        },
+        // 文本样式
+        textStyle: {
+            // 字体大小
+            fontSize: 16,
+            fontFamily: 'Microsoft YaHei',
+            // 字体颜色
+            color: 'white'
+        },
+        grid: {
+            left: '10%',
+            right: 150,
+            top: '18%',
+            bottom: '10%'
+        },
+        tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.7)',
+            formatter: function (param) {
+                let index = param.value[3]
+                // console.log(index, dataBJ[index]);
+                // prettier-ignore
+                return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                    + dataBJ[index].name
+                    + '</div>'
+                    + '消费笔数：' + Math.round(dataBJ[index].xValue) + '<br>'
+                    + '笔均金额：' + dataBJ[index].yValue + '<br>'
+                    + '同比' + (dataBJ[index].sign === 1 ? '增加' : '下降') + '：' + dataBJ[index].rate + '<br>';
+            }
+        },
+        xAxis: {
+            type: 'value',
+            name: '消费笔数',
+            nameGap: 16,
+            nameTextStyle: {
+                fontSize: 16
+            },
+            // max: 31,
+            splitLine: {
+                show: false
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '笔均金额',
+            nameLocation: 'end',
+            nameGap: 20,
+            nameTextStyle: {
+                fontSize: 16
+            },
+            splitLine: {
+                show: false
+            }
+        },
+        visualMap: [
+            {
+                left: 'right',
+                top: '10%',
+                dimension: 2,
+                min: 0,
+                max: 100,
+                // 文本样式
+                textStyle: {
+                    // 字体大小
+                    fontSize: 16,
+                    fontFamily: 'Microsoft YaHei',
+                    // 字体颜色
+                    color: 'white'
+                },
+                itemWidth: 30,
+                itemHeight: 120,
+                calculable: true,
+                precision: 0.1,
+                text: ['圆形大小：变化幅度'],
+                textGap: 30,
+                inRange: {
+                    symbolSize: [10, 70]
+                },
+                outOfRange: {
+                    symbolSize: [10, 70],
+                    color: ['rgba(255,255,255,0.4)']
+                },
+                controller: {
+                    inRange: {
+                        color: ['#185bff']
+                    },
+                    outOfRange: {
+                        color: ['#999']
+                    }
+                }
+            }
+        ],
+        series: [
+            {
+                name: '增长',
+                type: 'scatter',
+                itemStyle: itemStyle,
+                data: filteredUp
+            },
+            {
+                name: '下降',
+                type: 'scatter',
+                itemStyle: itemStyle,
+                data: filteredDown
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+    // 4.让图表随屏幕自适应
+    window.addEventListener('resize', function () {
+        myChart.resize();
+    })
+}
+drawScatterplot()
