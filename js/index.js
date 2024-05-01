@@ -77,7 +77,30 @@ function updateData() {
             })
         }
     }
-    drawMapRank('map-area-rank-chart', arr, area)
+    drawMapRank('map-area-rank-chart', arr, area, "area-rank-h3")
+
+    data = overall_data['商圈']
+    arr = []
+    for (let i = 0; i < data.length; i++) {
+        arr.push({
+            name: data[i]['商圈名'],
+            value: data[i][current_indicator_global],
+            lng: data[i]['经度'],
+            lat: data[i]['纬度'],
+            area: data[i]['城区']
+        })
+    }
+    drawHeatmap('map-business-chart', arr)
+    arr = []
+    for (let i = 0; i < data.length; i++) {
+        if (data[i]['城区'] === area) {
+            arr.push({
+                name: data[i]['商圈名'],
+                value: data[i][current_indicator_global]
+            })
+        }
+    }
+    drawMapRank('map-business-rank-chart', arr, area, "business-rank-h3")
 
     data = overall_data['整体情况-一级分类']
     arr = []
@@ -88,6 +111,7 @@ function updateData() {
         })
     }
     drawRank(arr)
+
 
     data = overall_data['整体行业分析-一级行业']
     arr = []
@@ -292,7 +316,7 @@ $(function () {
         }
         // get max min
         let data_arr = arr.map(({ value }) => value)
-        const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+        let max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
         tab_charts_arr["mapAreaChart"].setOption({
             visualMap: {
                 min: min_v,
@@ -314,7 +338,49 @@ $(function () {
                 })
             }
         }
-        drawMapRank('map-area-rank-chart', arr, area)
+        drawMapRank('map-area-rank-chart', arr, area, "area-rank-h3")
+
+        data = overall_data['商圈']
+        arr = []
+        for (let i = 0; i < data.length; i++) {
+            arr.push({
+                name: data[i]['商圈名'],
+                value: data[i][activeTab],
+                lng: data[i]['经度'],
+                lat: data[i]['纬度'],
+                area: data[i]['城区']
+            })
+        }
+        // get max min
+        data_arr = arr.map(({ value }) => value)
+        max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+        // get heapmap data
+        let heat_data = []
+        for (let i = 0; i < arr.length; i++) {
+            heat_data.push([arr[i].lng, arr[i].lat, arr[i].value, i])
+        }
+        tab_charts_arr["mapBusinessChart"].setOption({
+            visualMap: {
+                min: min_v,
+                max: max_v
+            },
+            series: [{
+                data: heat_data
+            }, {
+                data: heat_data
+            }]
+        });
+        arr = []
+        area = document.getElementById("business-rank-h3").innerHTML.slice(0, 3)
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area) {
+                arr.push({
+                    name: data[i]['商圈名'],
+                    value: data[i][activeTab]
+                })
+            }
+        }
+        drawMapRank('map-business-rank-chart', arr, area, "business-rank-h3")
 
         data = overall_data['整体情况-一级分类']
         arr = []
@@ -441,6 +507,7 @@ function drawMap(id, data) {
                 label: {
                     show: false // 是否显示对应地名
                 },
+                zoom: 1.2,
                 // 地图区域的多边形 图形样式
                 itemStyle: {
                     // 地图区域的颜色 如果设置了visualMap, 这个属性将不起作用
@@ -469,24 +536,6 @@ function drawMap(id, data) {
                 },
                 // 地图系列中的数据内容数组，数组项可以为单个数值
                 data: data
-                // [
-                //     { name: '怀柔区', value: 38.4, lng: 116.63853, lat: 40.322563 },
-                //     { name: '密云区', value: 47.9, lng: 116.849551, lat: 40.382999 },
-                //     { name: '昌平区', value: 196.3, lng: 116.237832, lat: 40.226854 },
-                //     { name: '顺义区', value: 102, lng: 116.663242, lat: 40.1362 },
-                //     { name: '平谷区', value: 42.3, lng: 117.128025, lat: 40.147115 },
-                //     { name: '门头沟区', value: 30.8, lng: 116.108179, lat: 39.94648 },
-                //     { name: '海淀区', value: 369.4, lng: 116.304872, lat: 39.96553 },
-                //     { name: '石景山区', value: 65.2, lng: 116.229612, lat: 39.912017 },
-                //     { name: '西城区', value: 129.8, lng: 116.372397, lat: 39.918561 },
-                //     { name: '东城区', value: 90.5, lng: 116.42272, lat: 39.934579 },
-                //     { name: '朝阳区', value: 395.5, lng: 116.449767, lat: 39.927254 },
-                //     { name: '大兴区', value: 156.2, lng: 116.348053, lat: 39.732833 },
-                //     { name: '房山区', value: 104.6, lng: 116.149892, lat: 39.755039 },
-                //     { name: '丰台区', value: 232.4, lng: 116.293105, lat: 39.865042 },
-                //     { name: '延庆区', value: 104.6 },
-                //     { name: '通州区', value: 232.4 }
-                // ]
             }
         ]
     })
@@ -506,13 +555,149 @@ function drawMap(id, data) {
         }
         // console.log(area, arr);
         // 渲染
-        drawMapRank("map-area-rank-chart", arr, area)
+        drawMapRank("map-area-rank-chart", arr, area, "area-rank-h3")
     });
     tab_charts_arr["mapAreaChart"] = mychart
 }
 
 // drawMap('map-area-chart')
 // drawMap('map-business-chart')
+
+function drawHeatmap(id, data) {
+    // get max min
+    let data_arr = data.map(({ value }) => value)
+    const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+    // get heapmap data
+    let heat_data = []
+    for (let i = 0; i < data.length; i++) {
+        heat_data.push([data[i].lng, data[i].lat, data[i].value, i])
+    }
+    // console.log(min_v, max_v);
+    // 基于准备好的dom，初始化echarts实例
+    let mychart = echarts.init(document.getElementById(id))
+    // 监听屏幕变化自动缩放图表
+    window.addEventListener('resize', function () {
+        mychart.resize()
+    })
+    // 绘制图表
+    mychart.setOption({
+        // 提示框组件
+        tooltip: {
+            // 触发类型, 数据项图形触发
+            trigger: 'item',
+            backgroundColor: 'rgba(255,255,255,0.7)',
+            // 文本样式
+            textStyle: {
+                // 字体大小
+                fontSize: 12,
+                fontFamily: 'Microsoft YaHei',
+                // 字体颜色
+                color: '#000'
+            },
+            // 使用函数模板，传入的数据值 ——> value: number | Array
+            formatter: function (val) {
+                let index = val.data[3]
+                console.log(val.data[3], data[index], data[index].value);
+                return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                    + data[index].area + ' - ' + data[index].name
+                    + '</div>'
+                    + current_indicator_global + ': ' + (data[index].value).toLocaleString('zh-CN', options_currency)
+            }
+        },
+        // 视觉映射组件
+        visualMap: {
+            // continuous 类型为连续型
+            type: 'continuous',
+            show: true, // 是否显示 visualMap-continuous 组件 如果设置为 false，不会显示，但是数据映射的功能还存在
+            // 指定 visualMapContinuous 组件的允许的最小/大值 min/max 必须用户指定
+            min: min_v,
+            // min,max 形成了视觉映射的定义域
+            max: max_v,
+            // 文本样式
+            textStyle: {
+                // 字体大小
+                fontSize: 12,
+                fontFamily: 'Microsoft YaHei',
+                // 字体颜色
+                color: '#00ffff'
+            },
+            // 拖拽时，是否实时更新
+            realtime: false,
+            // 是否显示拖拽用的手柄
+            calculable: true,
+            splitNumber: 5,
+            // 定义在选中范围中的视觉元素
+            inRange: {
+                // 图元的颜色
+                color: ['blue', 'blue', 'green', 'yellow', 'red']
+                // ['#d94e5d', '#eac736', '#50a3ba'].reverse()
+            },
+            right: "right"
+        },
+        geo: {
+            // 类型
+            type: 'map',
+            // 系列名称，用于tooltip的显示，legend 的图例筛选 在 setOption 更新数据和配置项时用于指定对应的系列
+            map: '北京',
+            // 地图类型
+            mapType: 'province',
+            label: {
+                emphasis: {
+                    show: false
+                }
+            },
+            zoom: 1.2,
+            roam: true,
+            itemStyle: {
+                normal: {
+                    areaColor: '#323c48',
+                    borderColor: '#111'
+                },
+                emphasis: {
+                    areaColor: '#2a333d'
+                }
+            }
+        },
+        series: [
+            {
+                name: '热力图',
+                type: 'heatmap',
+                coordinateSystem: 'geo',
+                data: heat_data,
+                pointSize: 10,
+                blurSize: 6,
+                zlevel: 99
+            },
+            {
+                name: '散点图', // series名称
+                type: 'scatter', // series图表类型
+                coordinateSystem: 'geo', // series坐标系类型
+                symbolSize: 10,
+                itemStyle: {
+                    opacity: 0,
+                },
+                data: heat_data
+            }
+        ]
+    })
+    mychart.on("click", function (params) { //点击事件
+        // console.log('我被点击了', params)
+        // 读取数据
+        let data = overall_data['商圈'], arr = []
+        let area = params.name
+        if (area == '') return
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area) {
+                arr.push({
+                    name: data[i]['商圈名'],
+                    value: data[i][current_indicator_global]
+                })
+            }
+        }
+        drawMapRank('map-business-rank-chart', arr, area, "business-rank-h3")
+    });
+    tab_charts_arr["mapBusinessChart"] = mychart
+}
 
 function drawRank(data) {
     //获取排行数据
@@ -542,7 +727,7 @@ function drawRank(data) {
             },
             formatter: function (params) {
                 const val = params[0];
-                console.log(val);
+                // console.log(val);
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + val.name
                     + '</div>'
@@ -737,8 +922,13 @@ function drawMapRank1(id) {
         charts.resize()
     })
 }
-function drawMapRank(id, data, areaName) {
-    document.getElementById("area-rank-h3").innerHTML = areaName + "内行业排名"
+
+function drawMapRank(id, data, areaName, h3id) {
+    if (h3id === "area-rank-h3") {
+        document.getElementById(h3id).innerHTML = areaName + "内行业排名"
+    } else {
+        document.getElementById(h3id).innerHTML = areaName + "内商圈排名"
+    }
     //获取排行数据
     data.sort((a, b) => { return b.value - a.value })
     var main_div = document.getElementById(id);
