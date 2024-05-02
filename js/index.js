@@ -48,7 +48,7 @@ function updateData() {
     for (let j = 0; j < headers.length; j++) {
         let arr = [], arr_rate_2023 = [], arr_rate_2019 = []
         for (let i = 0; i < data.length; i++) {
-            arr.push(+data[i][headers[j]])
+            arr.push(getFormatValues(headers[j], +data[i][headers[j]]))
             arr_rate_2023.push(+data[i][headers[j] + '较2023年同比增长率'])
             arr_rate_2019.push(+data[i][headers[j] + '较2019年同比增长率'])
         }
@@ -61,7 +61,7 @@ function updateData() {
     for (let i = 0; i < data.length; i++) {
         arr.push({
             name: data[i]['城区'],
-            value: data[i][current_indicator_global]
+            value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
         })
     }
     drawMap('map-area-chart', arr)
@@ -73,7 +73,7 @@ function updateData() {
         if (data[i]['城区'] === area) {
             arr.push({
                 name: data[i]['一级分类'],
-                value: data[i][current_indicator_global]
+                value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
             })
         }
     }
@@ -84,7 +84,7 @@ function updateData() {
     for (let i = 0; i < data.length; i++) {
         arr.push({
             name: data[i]['商圈名'],
-            value: data[i][current_indicator_global],
+            value: getFormatValues(current_indicator_global, data[i][current_indicator_global]),
             lng: data[i]['经度'],
             lat: data[i]['纬度'],
             area: data[i]['城区']
@@ -96,7 +96,7 @@ function updateData() {
         if (data[i]['城区'] === area) {
             arr.push({
                 name: data[i]['商圈名'],
-                value: data[i][current_indicator_global]
+                value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
             })
         }
     }
@@ -107,7 +107,7 @@ function updateData() {
     for (let i = 0; i < data.length; i++) {
         arr.push({
             name: data[i]['一级分类'],
-            value: data[i][current_indicator_global]
+            value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
         })
     }
     drawRank(arr)
@@ -118,8 +118,8 @@ function updateData() {
     for (let i = 0; i < data.length; i++) {
         arr.push({
             name: data[i]['一级分类'],
-            xValue: data[i]['交易总笔数'],
-            yValue: data[i]['笔均交易金额'],
+            xValue: getFormatValues('交易总笔数', data[i]['交易总笔数']),
+            yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
             rate: data[i]['笔均交易金额较2023年同比增长率']
         })
     }
@@ -138,10 +138,44 @@ const options_percent = {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
 };
+function getFormatValues(name, value) {
+    let format_value
+    switch (name) {
+        case '交易总金额':
+            format_value = (value / 100000000)
+            return format_value;
+        case '交易总笔数':
+            format_value = (value / 10000)
+            return format_value;
+        case '笔均交易金额':
+            format_value = (value)
+            return format_value;
+        case '店均交易金额':
+            format_value = (value / 10000)
+            return format_value;
+        case '店均交易笔数':
+            format_value = (value)
+            return format_value;
+    }
+}
+function formatValues(name, value) {
+    switch (name) {
+        case '交易总金额':
+            return value.toFixed(2) + "亿元";
+        case '交易总笔数':
+            return value.toFixed(2) + "万笔";
+        case '笔均交易金额':
+            return value.toFixed(2) + "元";
+        case '店均交易金额':
+            return value.toFixed(2) + "万元";
+        case '店均交易笔数':
+            return value.toFixed(2) + "笔";
+    }
+}
 function updateOverallValues(data) {
     let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数']
     for (let i = 0; i < 5; i++) {
-        document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = (+data[headers[i]]).toLocaleString()
+        document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-all #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
         document.querySelector("#data-t-all #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
         // console.log(data, headers[i], data[headers[i]]);
@@ -176,7 +210,7 @@ function drawIndicatorBar(id, data, title, rateData) {
                 // console.log(param, title, index);
                 // console.log(index, dataBJ[index]);
                 // prettier-ignore
-                return current_indicator_global + '：' + data[index].toLocaleString('zh-CN', options_currency) + '<br>'
+                return current_indicator_global + '：' + formatValues(current_indicator_global, data[index]) + '<br>'
                     + '较2023年同比增长率：' + rateData[0][index].toLocaleString('zh-CN', options_percent) + '<br>'
                     + '较2019年同比增长率：' + rateData[1][index].toLocaleString('zh-CN', options_percent) + '<br>';
             }
@@ -212,48 +246,49 @@ function drawIndicatorBar(id, data, title, rateData) {
             // 修改刻度标签，相关样式
             axisLabel: {
                 color: "rgba(255,255,255,0.6)",
-                fontSize: 12,
-                formatter: function (value) {
-                    var res = value.toString();
-                    var numN1 = 0;
-                    var numN2 = 1;
-                    var num1 = 0;
-                    var num2 = 0;
-                    var t1 = 1;
-                    for (var k = 0; k < res.length; k++) {
-                        if (res[k] == ".")
-                            t1 = 0;
-                        if (t1)
-                            num1++;
-                        else
-                            num2++;
-                    }
+                fontSize: 12
+                // ,
+                // formatter: function (value) {
+                //     var res = value.toString();
+                //     var numN1 = 0;
+                //     var numN2 = 1;
+                //     var num1 = 0;
+                //     var num2 = 0;
+                //     var t1 = 1;
+                //     for (var k = 0; k < res.length; k++) {
+                //         if (res[k] == ".")
+                //             t1 = 0;
+                //         if (t1)
+                //             num1++;
+                //         else
+                //             num2++;
+                //     }
 
-                    if (Math.abs(value) < 1 && res.length > 4) {
-                        for (var i = 2; i < res.length; i++) {
-                            if (res[i] == "0") {
-                                numN2++;
-                            } else if (res[i] == ".")
-                                continue;
-                            else
-                                break;
-                        }
-                        var v = parseFloat(value);
-                        v = v * Math.pow(10, numN2);
-                        return v.toString() + "e-" + numN2;
-                    } else if (num1 > 4) {
-                        if (res[0] == "-")
-                            numN1 = num1 - 2;
-                        else
-                            numN1 = num1 - 1;
-                        var v = parseFloat(value);
-                        v = v / Math.pow(10, numN1);
-                        if (num2 > 4)
-                            v = v.toFixed(4);
-                        return v.toString() + "e" + numN1;
-                    } else
-                        return parseFloat(value);
-                }
+                //     if (Math.abs(value) < 1 && res.length > 4) {
+                //         for (var i = 2; i < res.length; i++) {
+                //             if (res[i] == "0") {
+                //                 numN2++;
+                //             } else if (res[i] == ".")
+                //                 continue;
+                //             else
+                //                 break;
+                //         }
+                //         var v = parseFloat(value);
+                //         v = v * Math.pow(10, numN2);
+                //         return v.toString() + "e-" + numN2;
+                //     } else if (num1 > 4) {
+                //         if (res[0] == "-")
+                //             numN1 = num1 - 2;
+                //         else
+                //             numN1 = num1 - 1;
+                //         var v = parseFloat(value);
+                //         v = v / Math.pow(10, numN1);
+                //         if (num2 > 4)
+                //             v = v.toFixed(4);
+                //         return v.toString() + "e" + numN1;
+                //     } else
+                //         return parseFloat(value);
+                // }
 
             },
             // y轴样式修改
@@ -311,7 +346,7 @@ $(function () {
         for (let i = 0; i < data.length; i++) {
             arr.push({
                 name: data[i]['城区'],
-                value: data[i][activeTab]
+                value: getFormatValues(current_indicator_global, data[i][activeTab])
             })
         }
         // get max min
@@ -334,7 +369,7 @@ $(function () {
             if (data[i]['城区'] === area) {
                 arr.push({
                     name: data[i]['一级分类'],
-                    value: data[i][activeTab]
+                    value: getFormatValues(current_indicator_global, data[i][activeTab])
                 })
             }
         }
@@ -345,7 +380,7 @@ $(function () {
         for (let i = 0; i < data.length; i++) {
             arr.push({
                 name: data[i]['商圈名'],
-                value: data[i][activeTab],
+                value: getFormatValues(current_indicator_global, data[i][activeTab]),
                 lng: data[i]['经度'],
                 lat: data[i]['纬度'],
                 area: data[i]['城区']
@@ -376,7 +411,7 @@ $(function () {
             if (data[i]['城区'] === area) {
                 arr.push({
                     name: data[i]['商圈名'],
-                    value: data[i][activeTab]
+                    value: getFormatValues(current_indicator_global, data[i][activeTab])
                 })
             }
         }
@@ -387,7 +422,7 @@ $(function () {
         for (let i = 0; i < data.length; i++) {
             arr.push({
                 name: data[i]['一级分类'],
-                value: data[i][activeTab]
+                value: getFormatValues(current_indicator_global, data[i][activeTab])
             })
         }
         arr.sort((a, b) => { return b.value - a.value })
@@ -459,7 +494,7 @@ function drawMap(id, data) {
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + val.data.name
                     + '</div>'
-                    + current_indicator_global + ': ' + (val.data.value).toLocaleString('zh-CN', options_currency)
+                    + current_indicator_global + ': ' + formatValues(current_indicator_global, (val.data.value))
             }
         },
         // 视觉映射组件
@@ -601,7 +636,7 @@ function drawHeatmap(id, data) {
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + data[index].area + ' - ' + data[index].name
                     + '</div>'
-                    + current_indicator_global + ': ' + (data[index].value).toLocaleString('zh-CN', options_currency)
+                    + current_indicator_global + ': ' + formatValues(current_indicator_global, data[index].value)
             }
         },
         // 视觉映射组件
@@ -731,7 +766,7 @@ function drawRank(data) {
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + val.name
                     + '</div>'
-                    + current_indicator_global + ': ' + (val.data).toLocaleString('zh-CN', options_currency)
+                    + current_indicator_global + ': ' + formatValues(current_indicator_global, val.data)
             }
             // function (params) {
             //     const param = params[0];
@@ -939,7 +974,7 @@ function drawMapRank(id, data, areaName, h3id) {
         div.setAttribute("class", "flex1")
         // div.style.marginTop = "10px"
         var span = document.createElement("span");
-        span.innerHTML = "No." + (+i + 1) + " " + data[i].name + "：" + (data[i].value).toLocaleString('zh-CN', options_currency)
+        span.innerHTML = "No." + (+i + 1) + " " + data[i].name + "：" + formatValues(current_indicator_global, data[i].value)
         span.style.color = "#fff";
         // span.style.backgroundColor = "yellow";
         span.style.fontSize = "12px";
@@ -1194,10 +1229,55 @@ function drawScatterplot(data) {
     var chartDom = document.getElementById('bubble-chart');
     var myChart = echarts.init(chartDom);
     var option;
-    const dataBJ = data
+
     // get max min
     let data_arr = data.map(({ rate }) => Math.abs(rate))
     const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+
+    // reconstruct the data
+    let x_dataInterval = [0, 10, 100, 500, 5000, 10000], y_dataInterval = [0, 10, 100, 500, 5000, 10000]
+    // let x_max_interval = 1, y_max_interval = 1
+    let x_data_arr = data.map(({ xValue }) => xValue), y_data_arr = data.map(({ yValue }) => yValue)
+    let x_max_v = Math.max(...x_data_arr), y_max_v = Math.max(...y_data_arr)
+    console.log(x_max_v, y_max_v);
+
+    // while (x_max_interval < x_max_v) {
+    //     x_max_interval *= 10
+    //     x_dataInterval.push(x_max_interval)
+    // }
+    // while (y_max_interval < y_max_v) {
+    //     y_max_interval *= 10
+    //     y_dataInterval.push(y_max_interval)
+    // }
+    let x_interval = (x_dataInterval[x_dataInterval.length - 1] - x_dataInterval[0]) / (x_dataInterval.length - 1), y_interval = (y_dataInterval[y_dataInterval.length - 1] - y_dataInterval[0]) / (y_dataInterval.length - 1)
+    console.log(x_dataInterval, y_dataInterval, x_interval, y_interval);
+    let filteredUp = [], filteredDown = [];
+    for (let i = 0; i < data.length; i++) {
+        // 寻找在数据间隔里小于amount的最大值
+        let interval_min_v = Math.max(...x_dataInterval.filter(v => v <= data[i].xValue));
+        // 寻找在数据间隔里大于amount的最小值
+        let interval_max_v = Math.min(...x_dataInterval.filter(v => v > data[i].xValue));
+        let index = x_dataInterval.findIndex(v => v === interval_min_v);
+        // 计算该x在x轴上应该展示的位置
+        let x_value = (((data[i].xValue - interval_min_v) / (interval_max_v - interval_min_v)) * x_interval) + index * x_interval;
+        // console.log(data[i].xValue, x_interval, x_value, index, interval_min_v, interval_max_v);
+
+        index = Math.floor(data[i].yValue / y_interval)
+        // 寻找在数据间隔里小于amount的最大值
+        interval_min_v = Math.max(...y_dataInterval.filter(v => v <= data[i].yValue));
+        // 寻找在数据间隔里大于amount的最小值
+        interval_max_v = Math.min(...y_dataInterval.filter(v => v > data[i].yValue));
+        index = x_dataInterval.findIndex(v => v === interval_min_v);
+        // 计算该amount在y轴上应该展示的位置
+        let y_value = (((data[i].yValue - interval_min_v) / (interval_max_v - interval_min_v)) * y_interval) + index * y_interval;
+        // console.log(data[i].xValue, x_value, data[i].yValue, y_value);
+        if (data[i].rate > 0) {
+            filteredUp.push([x_value, y_value, Math.abs(data[i].rate), i])
+        } else {
+            filteredDown.push([x_value, y_value, Math.abs(data[i].rate), i])
+        }
+    }
+
     // const dataBJ = [
     //     { name: '怀柔区', xValue: 38.4, yValue: 16.63853, rate: 40.322563, sign: 0 },
     //     { name: '密云区', xValue: 47.9, yValue: 56.849551, rate: 20.382999, sign: 0 },
@@ -1216,14 +1296,14 @@ function drawScatterplot(data) {
     //     { name: '延庆区', xValue: 84.6, yValue: 59.293105, rate: 29.865042, sign: 0 },
     //     { name: '通州区', xValue: 32.4, yValue: 78.293105, rate: 39.865042, sign: 0 }
     // ]
-    let filteredUp = [], filteredDown = [];
-    for (let i = 0; i < dataBJ.length; i++) {
-        if (dataBJ[i].sign === 1) {
-            filteredUp.push([dataBJ[i].xValue, dataBJ[i].yValue, Math.abs(dataBJ[i].rate), i])
-        } else {
-            filteredDown.push([dataBJ[i].xValue, dataBJ[i].yValue, Math.abs(dataBJ[i].rate), i])
-        }
-    }
+    // let filteredUp = [], filteredDown = [];
+    // for (let i = 0; i < data.length; i++) {
+    //     if (data[i].rate > 0) {
+    //         filteredUp.push([data[i].xValue, data[i].yValue, Math.abs(data[i].rate), i])
+    //     } else {
+    //         filteredDown.push([data[i].xValue, data[i].yValue, Math.abs(data[i].rate), i])
+    //     }
+    // }
     // console.log(filteredUp, filteredDown);
     const itemStyle = {
         opacity: 0.8,
@@ -1271,11 +1351,11 @@ function drawScatterplot(data) {
                 // console.log(index, dataBJ[index]);
                 // prettier-ignore
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
-                    + dataBJ[index].name
+                    + data[index].name
                     + '</div>'
-                    + '消费笔数：' + Math.round(dataBJ[index].xValue) + '<br>'
-                    + '笔均金额：' + dataBJ[index].yValue + '<br>'
-                    + '同比' + (dataBJ[index].rate > 0 ? '增加' : '下降') + '：' + dataBJ[index].rate + '<br>';
+                    + '消费笔数：' + data[index].xValue + '<br>'
+                    + '笔均金额：' + data[index].yValue + '<br>'
+                    + '同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate + '<br>';
             }
         },
         xAxis: {
@@ -1285,9 +1365,17 @@ function drawScatterplot(data) {
             nameTextStyle: {
                 fontSize: 16
             },
-            // max: 31,
+            // min: 'dataMin',
+            max: x_dataInterval[x_dataInterval.length - 1],
+            splitNumber: x_dataInterval.length,
             splitLine: {
                 show: false
+            },
+            axisLabel: {
+                formatter: function (v, i) {
+                    // console.log('x', v, i);
+                    return x_dataInterval[i]
+                }
             }
         },
         yAxis: {
@@ -1300,6 +1388,14 @@ function drawScatterplot(data) {
             },
             splitLine: {
                 show: false
+            },
+            max: y_dataInterval[y_dataInterval.length - 1],
+            splitNumber: y_dataInterval.length,
+            axisLabel: {
+                formatter: function (v, i) {
+                    // console.log('y', v, i);
+                    return y_dataInterval[i]
+                }
             }
         },
         visualMap: [
@@ -1350,7 +1446,7 @@ function drawScatterplot(data) {
                     show: true,
                     formatter: param => {
                         let index = param.value[3]
-                        return dataBJ[index].name;
+                        return data[index].name;
                     },
                     position: 'right',
                     // 文本样式
@@ -1372,7 +1468,7 @@ function drawScatterplot(data) {
                     show: true,
                     formatter: param => {
                         let index = param.value[3]
-                        return dataBJ[index].name;
+                        return data[index].name;
                     },
                     position: 'right',
                     // 文本样式
