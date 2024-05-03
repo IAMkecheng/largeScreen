@@ -1360,7 +1360,7 @@ function drawScatterplot(data) {
         },
         xAxis: {
             type: 'value',
-            name: '消费笔数',
+            name: '消费笔数/元',
             nameGap: 16,
             nameTextStyle: {
                 fontSize: 16
@@ -1380,7 +1380,7 @@ function drawScatterplot(data) {
         },
         yAxis: {
             type: 'value',
-            name: '笔均金额',
+            name: '笔均金额/笔',
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
