@@ -59,17 +59,20 @@ function updateData() {
     data = overall_data['整体情况-各城区']
     let arr = []
     current_indicator_global = '交易总金额'
+    let area = '海淀区'
     for (let i = 0; i < data.length; i++) {
         arr.push({
             name: data[i]['城区'],
             value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
         })
+        if (data[i]['城区'] === area) {
+            updateAreaValues(data[i], area)
+        }
     }
     drawMap('map-area-chart', arr)
 
     data = overall_data['分城区-一级分类']
     arr = []
-    let area = '海淀区'
     for (let i = 0; i < data.length; i++) {
         if (data[i]['城区'] === area) {
             arr.push({
@@ -114,17 +117,42 @@ function updateData() {
     drawRank(arr)
 
 
-    data = overall_data['整体行业分析-一级行业']
+    // data = overall_data['整体行业分析-一级行业']
+    // arr = []
+    // for (let i = 0; i < data.length; i++) {
+    //     arr.push({
+    //         name: data[i]['一级分类'],
+    //         xValue: getFormatValues('交易总笔数', data[i]['交易总笔数']),
+    //         yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
+    //         rate: data[i]['笔均交易金额较2023年同比增长率']
+    //     })
+    // }
+    data = overall_data['分城区-一级分类']
     arr = []
     for (let i = 0; i < data.length; i++) {
-        arr.push({
-            name: data[i]['一级分类'],
-            xValue: getFormatValues('交易总笔数', data[i]['交易总笔数']),
-            yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
-            rate: data[i]['笔均交易金额较2023年同比增长率']
-        })
+        if (data[i]['城区'] === area) {
+            arr.push({
+                name: data[i]['一级分类'],
+                xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
+                yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
+                rate: data[i]['笔均交易金额较2023年同比增长率']
+            })
+        }
     }
     drawScatterplot(arr)
+
+    data = overall_data['分城区-二级分类']
+    let business = "生活百货"
+    arr = []
+    for (let i = 0; i < data.length; i++) {
+        if (data[i]['城区'] === area && data[i]['一级分类'] === business) {
+            arr.push({
+                name: data[i]['二级分类'],
+                value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
+            })
+        }
+    }
+    drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
 }
 
 // 99 => 99.00
@@ -162,12 +190,15 @@ function getFormatValues(name, value) {
 function formatValues(name, value) {
     switch (name) {
         case '交易总金额':
+            if (value < 0.005) return value.toFixed(4) + "亿元";
             return value.toFixed(2) + "亿元";
         case '交易总笔数':
+            if (value < 0.005) return value.toFixed(4) + "万笔";
             return value.toFixed(2) + "万笔";
         case '笔均交易金额':
             return value.toFixed(2) + "元";
         case '店均交易金额':
+            if (value < 0.005) return value.toFixed(4) + "万元";
             return value.toFixed(2) + "万元";
         case '店均交易笔数':
             return value.toFixed(2) + "笔";
@@ -183,7 +214,16 @@ function updateOverallValues(data) {
     }
 
 }
-
+function updateAreaValues(data, area) {
+    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数']
+    for (let i = 0; i < 5; i++) {
+        document.querySelector("#data-t-area #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
+        document.querySelector("#data-t-area #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
+        document.querySelector("#data-t-area #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
+        // console.log(data, headers[i], data[headers[i]]);
+    }
+    document.getElementById('detail_area_h3').innerHTML = area + "具体交易情况"
+}
 // 绘制五个指标
 function drawIndicatorBar(id, data, title, rateData, name) {
     // 1.实例化对象
@@ -376,7 +416,8 @@ $(function () {
 
         data = overall_data['分城区-一级分类']
         arr = []
-        let area = document.getElementById("area-rank-h3").innerHTML.slice(0, 3)
+        let area = document.getElementById("area-rank-h3").innerHTML.split("内")[0]
+        console.log('420', area);
         for (let i = 0; i < data.length; i++) {
             if (data[i]['城区'] === area) {
                 arr.push({
@@ -452,6 +493,22 @@ $(function () {
                 data: xData
             }]
         });
+
+
+        data = overall_data['分城区-二级分类']
+        area = document.getElementById("area-business-rank-h3").innerHTML.split("-")[0]
+        let business = document.getElementById("area-business-rank-h3").innerHTML.split("-")[1].split(" ")[0]
+        console.log('500', area, business);
+        arr = []
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area && data[i]['一级分类'] === business) {
+                arr.push({
+                    name: data[i]['二级分类'],
+                    value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
+                })
+            }
+        }
+        drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
     });
 });
 
@@ -590,19 +647,117 @@ function drawMap(id, data) {
         // console.log('我被点击了', params)
         // 读取数据
         let data = overall_data['分城区-一级分类'],
-            arr = []
+            arr = [],
+            area_arr = []
         let area = params.name
+        document.getElementById('bubble-h3').innerHTML = area + " - 一级分类"
         for (let i = 0; i < data.length; i++) {
             if (data[i]['城区'] === area) {
                 arr.push({
                     name: data[i]['一级分类'],
                     value: data[i][current_indicator_global]
                 })
+                area_arr.push({
+                    name: data[i]['一级分类'],
+                    xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
+                    yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
+                    rate: data[i]['笔均交易金额较2023年同比增长率']
+                })
             }
         }
         // console.log(area, arr);
         // 渲染
         drawMapRank("map-area-rank-chart", arr, area, "area-rank-h3")
+
+        data = overall_data['整体情况-各城区']
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area) {
+                updateAreaValues(data[i], area)
+            }
+        }
+
+        // update bubble chart
+        // get max min
+        let data_arr = area_arr.map(({ rate }) => Math.abs(rate))
+        const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+        // const max_v = 2.63, min_v = 0
+        // reconstruct the data
+        let x_dataInterval = [0, 0.05, 0.1, 1, 5, 10, 12], y_dataInterval = [0, 10, 100, 500, 5000, 10000]
+        let x_interval = (x_dataInterval[x_dataInterval.length - 1] - x_dataInterval[0]) / (x_dataInterval.length - 1), y_interval = (y_dataInterval[y_dataInterval.length - 1] - y_dataInterval[0]) / (y_dataInterval.length - 1)
+        let filteredUp = [], filteredDown = [];
+        for (let i = 0; i < area_arr.length; i++) {
+            let interval_min_v = Math.max(...x_dataInterval.filter(v => v <= area_arr[i].xValue));
+            let interval_max_v = Math.min(...x_dataInterval.filter(v => v > area_arr[i].xValue));
+            let index = x_dataInterval.findIndex(v => v === interval_min_v);
+            let x_value = (((area_arr[i].xValue - interval_min_v) / (interval_max_v - interval_min_v)) * x_interval) + index * x_interval;
+
+            index = Math.floor(area_arr[i].yValue / y_interval)
+            interval_min_v = Math.max(...y_dataInterval.filter(v => v <= area_arr[i].yValue));
+            interval_max_v = Math.min(...y_dataInterval.filter(v => v > area_arr[i].yValue));
+            index = y_dataInterval.findIndex(v => v === interval_min_v);
+            let y_value = (((area_arr[i].yValue - interval_min_v) / (interval_max_v - interval_min_v)) * y_interval) + index * y_interval;
+            if (area_arr[i].rate > 0) {
+                filteredUp.push([x_value, y_value, Math.abs(area_arr[i].rate), i, area_arr[i].name])
+            } else {
+                filteredDown.push([x_value, y_value, Math.abs(area_arr[i].rate), i, area_arr[i].name])
+            }
+        }
+        tab_charts_arr["bubbleChart"].setOption({
+            tooltip: {
+                formatter: function (param) {
+                    let index = param.value[3]
+                    // console.log(index, dataBJ[index]);
+                    // prettier-ignore
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                        + area_arr[index].name
+                        + '</div>'
+                        + '交易总金额：' + formatValues('交易总金额', area_arr[index].xValue) + '<br>'
+                        + '笔均交易金额：' + formatValues('笔均交易金额', area_arr[index].yValue) + '<br>'
+                        + '同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
+                }
+            },
+            visualMap: [
+                {
+                    min: min_v,
+                    max: max_v,
+                }
+            ],
+            series: [
+                {
+                    data: filteredUp,
+                    label: {
+                        formatter: param => {
+                            let index = param.value[3]
+                            return area_arr[index].name;
+                        },
+                    }
+                },
+                {
+                    data: filteredDown,
+                    label: {
+                        formatter: param => {
+                            let index = param.value[3]
+                            return area_arr[index].name;
+                        },
+                    }
+                }
+            ]
+        });
+
+
+        data = overall_data['分城区-二级分类']
+        let business = document.getElementById("area-business-rank-h3").innerHTML.split("-")[1].split(" ")[0]
+        arr = []
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area && data[i]['一级分类'] === business) {
+                arr.push({
+                    name: data[i]['二级分类'],
+                    value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
+                })
+            }
+        }
+        drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
+        console.log('759', area, business);
     });
     tab_charts_arr["mapAreaChart"] = mychart
 }
@@ -644,7 +799,7 @@ function drawHeatmap(id, data) {
             // 使用函数模板，传入的数据值 ——> value: number | Array
             formatter: function (val) {
                 let index = val.data[3]
-                console.log(val.data[3], data[index], data[index].value);
+                // console.log(val.data[3], data[index], data[index].value);
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + data[index].area + ' - ' + data[index].name
                     + '</div>'
@@ -823,7 +978,8 @@ function drawRank(data) {
                 },
                 formatter: function (val) {
                     // console.log(val);
-                    return val.value.toFixed(2)
+                    // return val.value.toFixed(2)
+                    return formatValues(current_indicator_global, val.value)
                 }
             },
             itemStyle: {
@@ -882,6 +1038,108 @@ function drawRank(data) {
     // }).fail(function (jqXHR) {
     //     console.log("Ajax Fail: ", jqXHR.status, jqXHR.statusText);
     // });
+    rankChart.on("click", function (params) { //点击事件
+        // console.log('我被点击了', params)
+        // 读取数据
+        let data = overall_data['分城区-一级分类'],
+            arr = [],
+            area_arr = []
+        let area = params.name
+        document.getElementById('bubble-h3').innerHTML = area + " - 分城区"
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['一级分类'] === area) {
+                area_arr.push({
+                    name: data[i]['城区'],
+                    xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
+                    yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
+                    rate: data[i]['笔均交易金额较2023年同比增长率']
+                })
+            }
+        }
+
+        // update bubble chart
+        // get max min
+        let data_arr = area_arr.map(({ rate }) => Math.abs(rate))
+        const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+        // const max_v = 2.63, min_v = 0
+        // reconstruct the data
+        let x_dataInterval = [0, 0.05, 0.1, 1, 5, 10, 12], y_dataInterval = [0, 10, 100, 500, 5000, 10000]
+        let x_interval = (x_dataInterval[x_dataInterval.length - 1] - x_dataInterval[0]) / (x_dataInterval.length - 1), y_interval = (y_dataInterval[y_dataInterval.length - 1] - y_dataInterval[0]) / (y_dataInterval.length - 1)
+        let filteredUp = [], filteredDown = [];
+        for (let i = 0; i < area_arr.length; i++) {
+            let interval_min_v = Math.max(...x_dataInterval.filter(v => v <= area_arr[i].xValue));
+            let interval_max_v = Math.min(...x_dataInterval.filter(v => v > area_arr[i].xValue));
+            let index = x_dataInterval.findIndex(v => v === interval_min_v);
+            let x_value = (((area_arr[i].xValue - interval_min_v) / (interval_max_v - interval_min_v)) * x_interval) + index * x_interval;
+
+            index = Math.floor(area_arr[i].yValue / y_interval)
+            interval_min_v = Math.max(...y_dataInterval.filter(v => v <= area_arr[i].yValue));
+            interval_max_v = Math.min(...y_dataInterval.filter(v => v > area_arr[i].yValue));
+            index = y_dataInterval.findIndex(v => v === interval_min_v);
+            let y_value = (((area_arr[i].yValue - interval_min_v) / (interval_max_v - interval_min_v)) * y_interval) + index * y_interval;
+            if (area_arr[i].rate > 0) {
+                filteredUp.push([x_value, y_value, Math.abs(area_arr[i].rate), i, area_arr[i].name])
+            } else {
+                filteredDown.push([x_value, y_value, Math.abs(area_arr[i].rate), i, area_arr[i].name])
+            }
+        }
+        tab_charts_arr["bubbleChart"].setOption({
+            tooltip: {
+                formatter: function (param) {
+                    let index = param.value[3]
+                    // console.log(index, dataBJ[index]);
+                    // prettier-ignore
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                        + area_arr[index].name
+                        + '</div>'
+                        + '交易总金额：' + formatValues('交易总金额', area_arr[index].xValue) + '<br>'
+                        + '笔均交易金额：' + formatValues('笔均交易金额', area_arr[index].yValue) + '<br>'
+                        + '同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
+                }
+            },
+            visualMap: [
+                {
+                    min: min_v,
+                    max: max_v,
+                }
+            ],
+            series: [
+                {
+                    data: filteredUp,
+                    label: {
+                        formatter: param => {
+                            let index = param.value[3]
+                            return area_arr[index].name;
+                        },
+                    }
+                },
+                {
+                    data: filteredDown,
+                    label: {
+                        formatter: param => {
+                            let index = param.value[3]
+                            return area_arr[index].name;
+                        },
+                    }
+                }
+            ]
+        });
+
+        data = overall_data['分城区-二级分类']
+        let business = area
+        area = document.getElementById("area-business-rank-h3").innerHTML.split("-")[0]
+        arr = []
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['城区'] === area && data[i]['一级分类'] === business) {
+                arr.push({
+                    name: data[i]['二级分类'],
+                    value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
+                })
+            }
+        }
+        drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
+        console.log('1140', area, business);
+    });
 }
 // drawRank()
 
@@ -977,8 +1235,10 @@ function drawMapRank1(id) {
 function drawMapRank(id, data, areaName, h3id) {
     if (h3id === "area-rank-h3") {
         document.getElementById(h3id).innerHTML = areaName + "内行业排名"
-    } else {
+    } else if (h3id === "business-rank-h3") {
         document.getElementById(h3id).innerHTML = areaName + "内商圈排名"
+    } else {
+        document.getElementById(h3id).innerHTML = areaName + " 二级分类排名"
     }
     //获取排行数据
     data.sort((a, b) => { return b.value - a.value })
@@ -1249,24 +1509,12 @@ function drawScatterplot(data) {
     // get max min
     let data_arr = data.map(({ rate }) => Math.abs(rate))
     const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+    // const max_v = 2.63, min_v = 0
 
     // reconstruct the data
-    let x_dataInterval = [0, 10, 100, 500, 5000, 10000], y_dataInterval = [0, 10, 100, 500, 5000, 10000]
-    // let x_max_interval = 1, y_max_interval = 1
-    let x_data_arr = data.map(({ xValue }) => xValue), y_data_arr = data.map(({ yValue }) => yValue)
-    let x_max_v = Math.max(...x_data_arr), y_max_v = Math.max(...y_data_arr)
-    console.log(x_max_v, y_max_v);
-
-    // while (x_max_interval < x_max_v) {
-    //     x_max_interval *= 10
-    //     x_dataInterval.push(x_max_interval)
-    // }
-    // while (y_max_interval < y_max_v) {
-    //     y_max_interval *= 10
-    //     y_dataInterval.push(y_max_interval)
-    // }
+    let x_dataInterval = [0, 0.05, 0.1, 1, 5, 10, 12], y_dataInterval = [0, 10, 100, 500, 5000, 10000]
     let x_interval = (x_dataInterval[x_dataInterval.length - 1] - x_dataInterval[0]) / (x_dataInterval.length - 1), y_interval = (y_dataInterval[y_dataInterval.length - 1] - y_dataInterval[0]) / (y_dataInterval.length - 1)
-    console.log(x_dataInterval, y_dataInterval, x_interval, y_interval);
+    // console.log(x_dataInterval, y_dataInterval, x_interval, y_interval);
     let filteredUp = [], filteredDown = [];
     for (let i = 0; i < data.length; i++) {
         // 寻找在数据间隔里小于amount的最大值
@@ -1283,14 +1531,14 @@ function drawScatterplot(data) {
         interval_min_v = Math.max(...y_dataInterval.filter(v => v <= data[i].yValue));
         // 寻找在数据间隔里大于amount的最小值
         interval_max_v = Math.min(...y_dataInterval.filter(v => v > data[i].yValue));
-        index = x_dataInterval.findIndex(v => v === interval_min_v);
+        index = y_dataInterval.findIndex(v => v === interval_min_v);
         // 计算该amount在y轴上应该展示的位置
         let y_value = (((data[i].yValue - interval_min_v) / (interval_max_v - interval_min_v)) * y_interval) + index * y_interval;
-        // console.log(data[i].xValue, x_value, data[i].yValue, y_value);
+        // console.log(data[i].xValue, x_value, data[i].yValue, y_value, index, interval_min_v, interval_max_v);
         if (data[i].rate > 0) {
-            filteredUp.push([x_value, y_value, Math.abs(data[i].rate), i])
+            filteredUp.push([x_value, y_value, Math.abs(data[i].rate), i, data[i].name])
         } else {
-            filteredDown.push([x_value, y_value, Math.abs(data[i].rate), i])
+            filteredDown.push([x_value, y_value, Math.abs(data[i].rate), i, data[i].name])
         }
     }
 
@@ -1369,14 +1617,14 @@ function drawScatterplot(data) {
                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
                     + data[index].name
                     + '</div>'
-                    + '消费笔数：' + data[index].xValue + '<br>'
-                    + '笔均金额：' + data[index].yValue + '<br>'
-                    + '同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate + '<br>';
+                    + '交易总金额：' + formatValues('交易总金额', data[index].xValue) + '<br>'
+                    + '笔均交易金额：' + formatValues('笔均交易金额', data[index].yValue) + '<br>'
+                    + '同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
             }
         },
         xAxis: {
             type: 'value',
-            name: '消费笔数/笔',
+            name: '交易总金额/亿元',
             nameGap: 16,
             nameTextStyle: {
                 fontSize: 16
@@ -1396,7 +1644,7 @@ function drawScatterplot(data) {
         },
         yAxis: {
             type: 'value',
-            name: '笔均金额/元',
+            name: '笔均交易金额/元',
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
@@ -1505,5 +1753,33 @@ function drawScatterplot(data) {
     window.addEventListener('resize', function () {
         myChart.resize();
     })
+    myChart.on("click", function (params) { //点击事件
+        // console.log('我被点击了', params)
+        // 读取数据
+        let origin_data = overall_data['分城区-二级分类'],
+            arr = []
+        let area = params.value[4], business
+        // console.log(area.slice(area.length - 1, area.length));
+        if (area.slice(area.length - 1, area.length) === '区') {
+            business = document.getElementById("area-business-rank-h3").innerHTML.split("-")[1].split(" ")[0]
+        } else {
+            business = area
+            area = document.getElementById("area-business-rank-h3").innerHTML.split("-")[0]
+        }
+        // console.log(area, business);
+
+        for (let i = 0; i < origin_data.length; i++) {
+            if (origin_data[i]['城区'] === area && origin_data[i]['一级分类'] === business) {
+                arr.push({
+                    name: origin_data[i]['二级分类'],
+                    value: getFormatValues(current_indicator_global, origin_data[i][current_indicator_global])
+                })
+            }
+        }
+        drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
+        console.log('1779', area, business);
+    });
+
+    tab_charts_arr["bubbleChart"] = myChart
 }
 // drawScatterplot()
