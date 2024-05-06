@@ -44,7 +44,8 @@ function updateData() {
     updateOverallValues(overall_data['整体情况-一季度加总'][0])
 
     let data = overall_data['整体情况-一季度各月份']
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数']
+    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'],
+        names = ['亿元', '万笔', '元', '万元', '笔']
     for (let j = 0; j < headers.length; j++) {
         let arr = [], arr_rate_2023 = [], arr_rate_2019 = []
         for (let i = 0; i < data.length; i++) {
@@ -52,7 +53,7 @@ function updateData() {
             arr_rate_2023.push(+data[i][headers[j] + '较2023年同比增长率'])
             arr_rate_2019.push(+data[i][headers[j] + '较2019年同比增长率'])
         }
-        drawIndicatorBar('#indicator-' + (j + 1), arr, headers[j], [arr_rate_2023, arr_rate_2019])
+        drawIndicatorBar('#indicator-' + (j + 1), arr, headers[j], [arr_rate_2023, arr_rate_2019], names[j])
     }
 
     data = overall_data['整体情况-各城区']
@@ -184,7 +185,7 @@ function updateOverallValues(data) {
 }
 
 // 绘制五个指标
-function drawIndicatorBar(id, data, title, rateData) {
+function drawIndicatorBar(id, data, title, rateData, name) {
     // 1.实例化对象
     var myChart = echarts.init(document.querySelector(id + " #indicator-bar-chart"));
     // 2.指定配置项和数据
@@ -218,7 +219,7 @@ function drawIndicatorBar(id, data, title, rateData) {
         // 修改图表位置大小
         grid: {
             left: '0%',
-            top: '10px',
+            top: '30px',
             right: '0%',
             bottom: '4%',
             containLabel: true
@@ -243,6 +244,13 @@ function drawIndicatorBar(id, data, title, rateData) {
         // y轴相关配置
         yAxis: [{
             type: 'value',
+            name: name,
+            nameTextStyle: {
+                fontSize: 16,
+                color: '#999999',
+                // name 位置
+                padding: [0, 0, 0, 0]
+            },
             // 修改刻度标签，相关样式
             axisLabel: {
                 color: "rgba(255,255,255,0.6)",
@@ -293,10 +301,14 @@ function drawIndicatorBar(id, data, title, rateData) {
             },
             // y轴样式修改
             axisLine: {
+                show: true,
                 lineStyle: {
-                    color: "rgba(255,255,255,0.6)",
-                    width: 2
+                    color: '#1f2a62'
                 }
+                // lineStyle: {
+                //     color: "rgba(255,255,255,0.6)",
+                //     width: 2
+                // }
             },
             // y轴分割线的颜色
             splitLine: {
@@ -808,6 +820,10 @@ function drawRank(data) {
                 color: "#188df0",
                 emphasis: {
                     color: "#e6b600"
+                },
+                formatter: function (val) {
+                    // console.log(val);
+                    return val.value.toFixed(2)
                 }
             },
             itemStyle: {
@@ -1360,7 +1376,7 @@ function drawScatterplot(data) {
         },
         xAxis: {
             type: 'value',
-            name: '消费笔数/元',
+            name: '消费笔数/笔',
             nameGap: 16,
             nameTextStyle: {
                 fontSize: 16
@@ -1380,7 +1396,7 @@ function drawScatterplot(data) {
         },
         yAxis: {
             type: 'value',
-            name: '笔均金额/笔',
+            name: '笔均金额/元',
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
