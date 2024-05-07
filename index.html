@@ -232,50 +232,27 @@
 							</div>
 						</div>
 						<div class="xpanel flex-container-column" id="sankey-diagram-div" style="display: none;">
-							<div class="chart-wrapper flex2">
-								<h3 class="chart-title" id="detail_area_h3">城市互动-北京消费构成</h3>
-								<div class="chart-div chart-done">
-									<table class="data-t" style="text-align: center;" id="data-t-sankey">
-										<tr>
-											<td id="td0">
-												<p>交易总金额</p>
-												<p><span id="v0">0</span></p>
-												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
-												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
-											</td>
-											<td id="td1">
-												<p>交易总笔数</p>
-												<p><span id="v0">0</span></p>
-												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
-												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
-											</td>
-											<td id="td2">
-												<p>笔均交易金额</p>
-												<p><span id="v0">0</span></p>
-												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
-												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
-											</td>
-											<td id="td3">
-												<p>店均交易金额</p>
-												<p><span id="v0">0</span></p>
-												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
-												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
-											</td>
-											<td id="td4">
-												<p>店均交易笔数</p>
-												<p><span id="v0">0</span></p>
-												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
-												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
-											</td>
-
-										</tr>
-									</table>
+							<div class="chart-wrapper flex2" style="border: 0px;">
+								<h3 class="chart-title" id="detail_area_h3">城市互动</h3>
+								<div class="chart-div chart-done flex-container-row" style="height: 95%;top: 20px;">
+									<div class="chart-wrapper flex5" style="border: 0px;">
+										<h3 class="chart-title" style="text-align: center;">北京消费构成 Top 5:</h3>
+										<div class="chart-div flex-container-column" id="beijingin-rank-chart"
+											style="overflow-y: scroll;margin-left: 20%;">
+										</div>
+									</div>
+									<div class="chart-wrapper flex5" style="border: 0px;">
+										<h3 class="chart-title" style="text-align: center;">北京人在外地消费 Top 5:</h3>
+										<div class="chart-div flex-container-column" id="beijingout-rank-chart"
+											style="overflow-y: scroll;margin-left: 20%;">
+										</div>
+									</div>
 								</div>
 							</div>
 							<div class="flex9 flex-container-row">
-								<div class="chart-wrapper flex4">
-									<h3 class="chart-title" id="sankey-h3">城市互动
-									</h3>
+								<div class="chart-wrapper flex4" style="border: 0px;">
+									<!-- <h3 class="chart-title" id="sankey-h3">城市互动
+									</h3> -->
 									<div class="chart-div" id="sankey-chart">
 									</div>
 								</div>

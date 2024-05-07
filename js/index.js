@@ -160,8 +160,9 @@ function updateData() {
     node_arr.push({
         name: '北京市'
     })
-    for (let i = 0; i < data.length; i++) {
-        if (data[i]['交易金额占比'] >= 0.0014 && data[i]['城市'] != '北京市') {
+    let beijing_in_arr = [], beijing_out_arr = []
+    for (let i = 0; i < 20; i++) {
+        if (data[i]['城市'] != '北京市') {//data[i]['交易金额占比'] >= 0.0014 && 
             node_arr.push({
                 name: data[i]['城市'] + "-in"
             })
@@ -171,21 +172,29 @@ function updateData() {
                 value: data[i]['交易金额占比']
             })
         }
+        if (i < 5) {
+            beijing_in_arr.push(data[i])
+        }
     }
     data = overall_data['城市互动-北京人在外地消费']
-    for (let i = 0; i < data.length; i++) {
-        if (data[i]['交易金额占比'] >= 0.01) {
-            node_arr.push({
-                name: data[i]['城市'] + "-out"
-            })
-            link_arr.push({
-                source: '北京市',
-                target: data[i]['城市'] + "-out",
-                value: data[i]['交易金额占比']
-            })
+    for (let i = 0; i < 20; i++) {
+        // if (data[i]['交易金额占比'] >= 0.01) {
+        node_arr.push({
+            name: data[i]['城市'] + "-out"
+        })
+        link_arr.push({
+            source: '北京市',
+            target: data[i]['城市'] + "-out",
+            value: data[i]['交易金额占比']
+        })
+        // }
+        if (i < 5) {
+            beijing_out_arr.push(data[i])
         }
     }
     drawSankeyDiagram(node_arr, link_arr)
+    drawMapRankBeijing('beijingin-rank-chart', beijing_in_arr)
+    drawMapRankBeijing('beijingout-rank-chart', beijing_out_arr)
 }
 
 // 99 => 99.00
@@ -257,6 +266,7 @@ function updateAreaValues(data, area) {
     }
     document.getElementById('detail_area_h3').innerHTML = area + "具体交易情况"
 }
+
 // 绘制五个指标
 function drawIndicatorBar(id, data, title, rateData, name) {
     // 1.实例化对象
@@ -1324,6 +1334,24 @@ function drawMapRank(id, data, areaName, h3id) {
 }
 // drawMapRank('map-area-rank-chart')
 // drawMapRank('map-business-rank-chart')
+function drawMapRankBeijing(id, data) {
+    var main_div = document.getElementById(id);
+    main_div.style.paddingTop = "25px"
+    main_div.innerHTML = ''
+    for (let i in data) {
+        var div = document.createElement("div");
+        div.setAttribute("class", "flex1")
+        // div.style.marginTop = "10px"
+        var span = document.createElement("span");
+        span.innerHTML = "No." + (+i + 1) + " " + data[i]['城市'] + "：" + (data[i]['交易金额'] / 10000).toFixed(2) + "万元，占比 " + (data[i]['交易金额占比']).toLocaleString('zh-CN', options_percent)
+        span.style.color = "#fff";
+        // span.style.backgroundColor = "yellow";
+        span.style.fontSize = "12px";
+        span.style.whiteSpace = 'nowrap';
+        div.appendChild(span)
+        main_div.appendChild(div);
+    }
+}
 
 function drawBubbleChart() {
     var chartDom = document.getElementById('bubble-chart');
