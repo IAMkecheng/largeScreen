@@ -155,7 +155,6 @@ function updateData() {
     drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
 
     data = overall_data['城市互动-北京消费构成']
-    let data1 = overall_data['城市互动-北京人在外地消费']
     let node_arr = []
     let link_arr = []
     node_arr.push({
@@ -1833,21 +1832,25 @@ function drawScatterplot(data) {
 function showSankeyDiagram() {
     if (document.getElementById("detail-business-div").style.display === 'none') {
         document.getElementById("detail-business-div").style.display = 'flex'
+        document.getElementById("sankey-diagram-div").style.display = 'none'
+        tab_charts_arr["bubbleChart"].resize()
     } else {
         document.getElementById("detail-business-div").style.display = 'none'
+        document.getElementById("sankey-diagram-div").style.display = 'flex'
+        tab_charts_arr["sankeyChart"].resize()
     }
 
 }
 
 function drawSankeyDiagram(node, links) {
-    console.log(node, links);
+    // console.log(node, links);
 
     var chartDom = document.getElementById('sankey-chart');
     var myChart = echarts.init(chartDom);
     var option;
 
     option = {
-        series: {
+        series: [{
             type: 'sankey',
             layout: 'none',
             emphasis: {
@@ -1880,6 +1883,61 @@ function drawSankeyDiagram(node, links) {
                 }
             }
         }
+        ],
+        graphic: [
+            {
+                type: 'text',
+                z: 100,
+                left: '15%',
+                bottom: '10%',
+                style: {
+                    fill: '#white',
+                    text: '城市互动-北京消费构成',
+                    font: '14px Microsoft YaHei'
+                }
+            },
+            {
+                type: 'text',
+                z: 100,
+                right: '30%',
+                bottom: '10%',
+                style: {
+                    fill: '#white',
+                    text: '城市互动-北京人在外地消费',
+                    font: '14px Microsoft YaHei'
+                }
+            }
+        ],
+        tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.7)',
+            // 文本样式
+            textStyle: {
+                // 字体大小
+                fontSize: 12,
+                fontFamily: 'Microsoft YaHei',
+                // 字体颜色
+                color: '#000'
+            },
+            formatter: function (param) {
+                // console.log(param);
+                let item_data = param.data
+                if ('target' in item_data) {
+                    let title = '', city
+                    if (item_data['source'].split("-").length > 1) {
+                        title = '北京消费构成'
+                        city = item_data['source'].split("-")[0]
+                    } else {
+                        title = '北京人在外地消费'
+                        city = item_data['target'].split("-")[0]
+                    }
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.8); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+                        + title
+                        + '</div>'
+                        + '城市：' + city + '<br>'
+                        + '交易金额占比：' + item_data['value'].toLocaleString('zh-CN', options_percent) + '<br>';
+                }
+            }
+        }
     };
 
     option && myChart.setOption(option);
@@ -1887,7 +1945,7 @@ function drawSankeyDiagram(node, links) {
     window.addEventListener('resize', function () {
         myChart.resize();
     })
-    tab_charts_arr["bubbleChart"] = myChart
+    tab_charts_arr["sankeyChart"] = myChart
 
 }
 // drawSankeyDiagram()
