@@ -153,6 +153,40 @@ function updateData() {
         }
     }
     drawMapRank('area-business-rank-chart', arr, area + "-" + business, "area-business-rank-h3")
+
+    data = overall_data['城市互动-北京消费构成']
+    let data1 = overall_data['城市互动-北京人在外地消费']
+    let node_arr = []
+    let link_arr = []
+    node_arr.push({
+        name: '北京市'
+    })
+    for (let i = 0; i < data.length; i++) {
+        if (data[i]['交易金额占比'] >= 0.0014 && data[i]['城市'] != '北京市') {
+            node_arr.push({
+                name: data[i]['城市'] + "-in"
+            })
+            link_arr.push({
+                source: data[i]['城市'] + "-in",
+                target: '北京市',
+                value: data[i]['交易金额占比']
+            })
+        }
+    }
+    data = overall_data['城市互动-北京人在外地消费']
+    for (let i = 0; i < data.length; i++) {
+        if (data[i]['交易金额占比'] >= 0.01) {
+            node_arr.push({
+                name: data[i]['城市'] + "-out"
+            })
+            link_arr.push({
+                source: '北京市',
+                target: data[i]['城市'] + "-out",
+                value: data[i]['交易金额占比']
+            })
+        }
+    }
+    drawSankeyDiagram(node_arr, link_arr)
 }
 
 // 99 => 99.00
@@ -1577,9 +1611,12 @@ function drawScatterplot(data) {
         shadowColor: 'rgba(0,0,0,0.3)'
     };
     option = {
+        width: '80%',
+        // height: '100%',
         color: ['#FF0000', '#00FF00'],
         legend: {
-            top: 10,
+            top: '5%',
+            left: '10%',
             data: ['增长', '下降'],
             textStyle: {
                 fontSize: 16,
@@ -1625,9 +1662,11 @@ function drawScatterplot(data) {
         xAxis: {
             type: 'value',
             name: '交易总金额/亿元',
-            nameGap: 16,
+            nameLocation: 'center',
+            // nameGap: 16,
             nameTextStyle: {
-                fontSize: 16
+                fontSize: 16,
+                padding: [10, 0, 0, 300]// 四个数字分别为上右下左与原位置距离
             },
             // min: 'dataMin',
             max: x_dataInterval[x_dataInterval.length - 1],
@@ -1648,7 +1687,8 @@ function drawScatterplot(data) {
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
-                fontSize: 16
+                fontSize: 16,
+                padding: [0, 0, 0, 30]// 四个数字分别为上右下左与原位置距离
             },
             splitLine: {
                 show: false
@@ -1664,8 +1704,11 @@ function drawScatterplot(data) {
         },
         visualMap: [
             {
-                left: 'right',
-                top: '10%',
+                // show: false,
+                right: '0%',
+                top: '3%',
+                orient: 'horizontal',
+                // align: 'left',
                 dimension: 2,
                 min: min_v,
                 max: max_v,
@@ -1679,10 +1722,10 @@ function drawScatterplot(data) {
                 },
                 itemWidth: 30,
                 itemHeight: 120,
-                calculable: true,
+                calculable: false,
                 precision: 2,
                 text: ['圆形大小：变化幅度'],
-                textGap: 30,
+                textGap: 10,
                 inRange: {
                     symbolSize: [10, 70]
                 },
@@ -1697,6 +1740,9 @@ function drawScatterplot(data) {
                     outOfRange: {
                         color: ['#999']
                     }
+                },
+                formatter: function (value) { //标签的格式化工具。
+                    return value.toLocaleString('zh-CN', options_percent)
                 }
             }
         ],
@@ -1783,3 +1829,65 @@ function drawScatterplot(data) {
     tab_charts_arr["bubbleChart"] = myChart
 }
 // drawScatterplot()
+
+function showSankeyDiagram() {
+    if (document.getElementById("detail-business-div").style.display === 'none') {
+        document.getElementById("detail-business-div").style.display = 'flex'
+    } else {
+        document.getElementById("detail-business-div").style.display = 'none'
+    }
+
+}
+
+function drawSankeyDiagram(node, links) {
+    console.log(node, links);
+
+    var chartDom = document.getElementById('sankey-chart');
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+        series: {
+            type: 'sankey',
+            layout: 'none',
+            emphasis: {
+                focus: 'adjacency'
+            },
+            data: node,
+            links: links,
+            nodeGap: 16,
+            label: {
+                show: true,
+                formatter: param => {
+                    return param.data.name.split("-")[0];
+                },
+                // position: 'right',
+                // 文本样式
+                textStyle: {
+                    // 字体大小
+                    fontSize: 12,
+                    fontFamily: 'Microsoft YaHei',
+                    // 字体颜色
+                    color: 'white',
+                }
+            },
+            //线条样式
+            lineStyle: {
+                normal: {
+                    color: 'gradient',
+                    curveness: 0.5,
+                    opacity: 0.6
+                }
+            }
+        }
+    };
+
+    option && myChart.setOption(option);
+    // 4.让图表随屏幕自适应
+    window.addEventListener('resize', function () {
+        myChart.resize();
+    })
+    tab_charts_arr["bubbleChart"] = myChart
+
+}
+// drawSankeyDiagram()

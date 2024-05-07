@@ -37,7 +37,7 @@
 									<table class="data-t" style="text-align: center;" id="data-t-all">
 										<tr>
 											<td id="td0">
-												<p>交易总金额</p>
+												<p><a onclick="showSankeyDiagram()">交易总金额</a></p>
 												<p><span id="v0">0</span></p>
 												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
 												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
@@ -157,7 +157,7 @@
 
 				<div class="col-lg-6 fill-h">
 					<div class="xpanel-wrapper xpanel-wrapper-1">
-						<div class="xpanel flex-container-column">
+						<div class="xpanel flex-container-column" id="detail-business-div" style="display: none;">
 							<div class="chart-wrapper flex2">
 								<h3 class="chart-title" id="detail_area_h3">海淀区具体交易情况</h3>
 								<div class="chart-div chart-done">
@@ -229,10 +229,57 @@
 										style="overflow-y: scroll;">
 									</div>
 								</div>
-
 							</div>
+						</div>
+						<div class="xpanel flex-container-column" id="sankey-diagram-div">
+							<div class="chart-wrapper flex2">
+								<h3 class="chart-title" id="detail_area_h3">城市互动-北京消费构成</h3>
+								<div class="chart-div chart-done">
+									<table class="data-t" style="text-align: center;" id="data-t-sankey">
+										<tr>
+											<td id="td0">
+												<p>交易总金额</p>
+												<p><span id="v0">0</span></p>
+												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
+												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
+											</td>
+											<td id="td1">
+												<p>交易总笔数</p>
+												<p><span id="v0">0</span></p>
+												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
+												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
+											</td>
+											<td id="td2">
+												<p>笔均交易金额</p>
+												<p><span id="v0">0</span></p>
+												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
+												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
+											</td>
+											<td id="td3">
+												<p>店均交易金额</p>
+												<p><span id="v0">0</span></p>
+												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
+												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
+											</td>
+											<td id="td4">
+												<p>店均交易笔数</p>
+												<p><span id="v0">0</span></p>
+												<p>较2023同比增长<span id="v1" style="font-size: 16px;">0</span></p>
+												<p>较2019同比增长<span id="v2" style="font-size: 16px;">0</span></p>
+											</td>
 
-
+										</tr>
+									</table>
+								</div>
+							</div>
+							<div class="flex9 flex-container-row">
+								<div class="chart-wrapper flex4">
+									<h3 class="chart-title" id="sankey-h3">城市互动
+									</h3>
+									<div class="chart-div" id="sankey-chart">
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="xpanel-wrapper-footer"></div>
 					</div>
