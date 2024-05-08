@@ -176,6 +176,7 @@ function updateData() {
             beijing_in_arr.push(data[i])
         }
     }
+
     data = overall_data['城市互动-北京人在外地消费']
     for (let i = 0; i < 20; i++) {
         // if (data[i]['交易金额占比'] >= 0.01) {
@@ -698,7 +699,7 @@ function drawMap(id, data) {
             if (data[i]['城区'] === area) {
                 arr.push({
                     name: data[i]['一级分类'],
-                    value: data[i][current_indicator_global]
+                    value: getFormatValues(current_indicator_global, data[i][current_indicator_global])
                 })
                 area_arr.push({
                     name: data[i]['一级分类'],
@@ -1276,11 +1277,15 @@ function drawMapRank1(id) {
 }
 
 function drawMapRank(id, data, areaName, h3id) {
+    let show_num = 5
     if (h3id === "area-rank-h3") {
+        show_num = 5
         document.getElementById(h3id).innerHTML = areaName + "内行业排名"
     } else if (h3id === "business-rank-h3") {
+        show_num = 5
         document.getElementById(h3id).innerHTML = areaName + "内商圈排名"
     } else {
+        show_num = 10
         document.getElementById(h3id).innerHTML = areaName + " 二级分类排名"
     }
     //获取排行数据
@@ -1289,6 +1294,7 @@ function drawMapRank(id, data, areaName, h3id) {
     main_div.style.paddingTop = "25px"
     main_div.innerHTML = ''
     for (let i in data) {
+        if (i >= show_num) break
         var div = document.createElement("div");
         div.setAttribute("class", "flex1")
         // div.style.marginTop = "10px"
