@@ -484,12 +484,12 @@ $(function () {
             })
         }
         // get max min
-        data_arr = arr.map(({ value }) => value)
+        data_arr = arr.map(({ value }) => Math.log10(value))
         max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
         // get heapmap data
         let heat_data = []
         for (let i = 0; i < arr.length; i++) {
-            heat_data.push([arr[i].lng, arr[i].lat, arr[i].value, i])
+            heat_data.push([arr[i].lng, arr[i].lat, Math.log10(arr[i].value), i])
         }
         tab_charts_arr["mapBusinessChart"].setOption({
             visualMap: {
@@ -811,12 +811,12 @@ function drawMap(id, data) {
 
 function drawHeatmap(id, data) {
     // get max min
-    let data_arr = data.map(({ value }) => value)
+    let data_arr = data.map(({ value }) => Math.log10(value))
     const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
     // get heapmap data
     let heat_data = []
     for (let i = 0; i < data.length; i++) {
-        heat_data.push([data[i].lng, data[i].lat, data[i].value, i])
+        heat_data.push([data[i].lng, data[i].lat, Math.log10(data[i].value), i])
     }
     // console.log(min_v, max_v);
     // 基于准备好的dom，初始化echarts实例
