@@ -248,21 +248,53 @@ function formatValues(name, value) {
     }
 }
 function updateOverallValues(data) {
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数']
+    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
         document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-all #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
+        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+            color = '#FF0000'
+        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+            color = '#00FF00'
+        } else {
+            color = '#FFFFFF'
+        }
+        document.querySelector("#data-t-all #td" + i + " #v1").style.color = color
         document.querySelector("#data-t-all #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
+        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+            color = '#FF0000'
+        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+            color = '#00FF00'
+        } else {
+            color = '#FFFFFF'
+        }
+        document.querySelector("#data-t-all #td" + i + " #v2").style.color = color
         // console.log(data, headers[i], data[headers[i]]);
     }
 
 }
 function updateAreaValues(data, area) {
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数']
+    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
         document.querySelector("#data-t-area #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-area #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
+        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+            color = '#FF0000'
+        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+            color = '#00FF00'
+        } else {
+            color = '#FFFFFF'
+        }
+        document.querySelector("#data-t-area #td" + i + " #v1").style.color = color
         document.querySelector("#data-t-area #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
+        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+            color = '#FF0000'
+        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+            color = '#00FF00'
+        } else {
+            color = '#FFFFFF'
+        }
+        document.querySelector("#data-t-area #td" + i + " #v2").style.color = color
         // console.log(data, headers[i], data[headers[i]]);
     }
     document.getElementById('detail_area_h3').innerHTML = area + "具体交易情况"
@@ -318,7 +350,7 @@ function drawIndicatorBar(id, data, title, rateData, name) {
             // 修改刻度标签，相关样式
             axisLabel: {
                 color: "rgba(255,255,255,0.8)",
-                fontSize: 10
+                fontSize: 14
             },
             // x轴样式不显示
             axisLine: {
@@ -338,7 +370,7 @@ function drawIndicatorBar(id, data, title, rateData, name) {
             // 修改刻度标签，相关样式
             axisLabel: {
                 color: "rgba(255,255,255,0.6)",
-                fontSize: 12
+                fontSize: 14
                 // ,
                 // formatter: function (value) {
                 //     var res = value.toString();
@@ -429,6 +461,8 @@ $(function () {
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         // 获取已激活的标签页的名称
         var activeTab = $(e.target).text();
+        if (activeTab == '客单价') activeTab = '笔均交易金额'
+        if (activeTab == '月营业额') activeTab = '店均交易金额'
         current_indicator_global = activeTab
         // 获取前一个激活的标签页的名称
         var previousTab = $(e.relatedTarget).text();
@@ -622,7 +656,7 @@ function drawMap(id, data) {
             // 文本样式
             textStyle: {
                 // 字体大小
-                fontSize: 12,
+                fontSize: 14,
                 fontFamily: 'Microsoft YaHei',
                 // 字体颜色
                 color: '#00ffff'
@@ -636,7 +670,10 @@ function drawMap(id, data) {
                 // 图元的颜色
                 color: ['#b0c2f9', '#185bff']
             },
-            right: "right"
+            right: "right",
+            // formatter: function (value) { //标签的格式化工具。
+            //     return Math.pow(10, value).toFixed(2)
+            // }
         },
         series: [
             {
@@ -862,7 +899,7 @@ function drawHeatmap(id, data) {
             // 文本样式
             textStyle: {
                 // 字体大小
-                fontSize: 12,
+                fontSize: 14,
                 fontFamily: 'Microsoft YaHei',
                 // 字体颜色
                 color: '#00ffff'
@@ -991,7 +1028,7 @@ function drawRank(data) {
         grid: {
             top: 10,
             bottom: 10,
-            left: 60
+            left: 70
         },
         xAxis: {
             show: false,
@@ -1003,7 +1040,7 @@ function drawRank(data) {
             axisLine: { show: false },
             axisTick: { show: false },
             axisLabel: {
-                fontSize: 12,
+                fontSize: 14,
                 color: "#b0c2f9"
             },
             data: yData
@@ -1015,7 +1052,7 @@ function drawRank(data) {
             label: {
                 show: true,
                 position: "right",
-                fontSize: 12,
+                fontSize: 14,
                 color: "#188df0",
                 emphasis: {
                     color: "#e6b600"
@@ -1302,7 +1339,7 @@ function drawMapRank(id, data, areaName, h3id) {
         span.innerHTML = "No." + (+i + 1) + " " + data[i].name + "：" + formatValues(current_indicator_global, data[i].value)
         span.style.color = "#fff";
         // span.style.backgroundColor = "yellow";
-        span.style.fontSize = "12px";
+        span.style.fontSize = "14px";
         span.style.whiteSpace = 'nowrap';
         div.appendChild(span)
         main_div.appendChild(div);
@@ -1352,7 +1389,7 @@ function drawMapRankBeijing(id, data) {
         span.innerHTML = "No." + (+i + 1) + " " + data[i]['城市'] + "：" + (data[i]['交易金额'] / 10000).toFixed(2) + "万元，占比 " + (data[i]['交易金额占比']).toLocaleString('zh-CN', options_percent)
         span.style.color = "#fff";
         // span.style.backgroundColor = "yellow";
-        span.style.fontSize = "12px";
+        span.style.fontSize = "14px";
         span.style.whiteSpace = 'nowrap';
         div.appendChild(span)
         main_div.appendChild(div);
@@ -1795,7 +1832,7 @@ function drawScatterplot(data) {
                     // 文本样式
                     textStyle: {
                         // 字体大小
-                        fontSize: 12,
+                        fontSize: 14,
                         fontFamily: 'Microsoft YaHei',
                         // 字体颜色
                         color: 'white'
@@ -1817,7 +1854,7 @@ function drawScatterplot(data) {
                     // 文本样式
                     textStyle: {
                         // 字体大小
-                        fontSize: 12,
+                        fontSize: 14,
                         fontFamily: 'Microsoft YaHei',
                         // 字体颜色
                         color: 'white'
@@ -1902,7 +1939,7 @@ function drawSankeyDiagram(node, links) {
                 // 文本样式
                 textStyle: {
                     // 字体大小
-                    fontSize: 12,
+                    fontSize: 14,
                     fontFamily: 'Microsoft YaHei',
                     // 字体颜色
                     color: 'white',
