@@ -671,9 +671,9 @@ function drawMap(id, data) {
                 color: ['#b0c2f9', '#185bff']
             },
             right: "right",
-            // formatter: function (value) { //标签的格式化工具。
-            //     return Math.pow(10, value).toFixed(2)
-            // }
+            formatter: function (value) { //标签的格式化工具。
+                return value.toFixed(2)
+            }
         },
         series: [
             {
@@ -850,10 +850,12 @@ function drawHeatmap(id, data) {
     // get max min
     let data_arr = data.map(({ value }) => Math.log10(value))
     const max_v = Math.max(...data_arr), min_v = Math.min(...data_arr)
+    console.log("max_v", max_v, min_v);
     // get heapmap data
     let heat_data = []
     for (let i = 0; i < data.length; i++) {
         heat_data.push([data[i].lng, data[i].lat, Math.log10(data[i].value), i])
+        // console.log(data[i].name, data[i].value, (data[i].value));
     }
     // console.log(min_v, max_v);
     // 基于准备好的dom，初始化echarts实例
@@ -896,6 +898,7 @@ function drawHeatmap(id, data) {
             min: min_v,
             // min,max 形成了视觉映射的定义域
             max: max_v,
+            dimension: 2,
             // 文本样式
             textStyle: {
                 // 字体大小
@@ -915,7 +918,10 @@ function drawHeatmap(id, data) {
                 color: ['blue', 'blue', 'green', 'yellow', 'red']
                 // ['#d94e5d', '#eac736', '#50a3ba'].reverse()
             },
-            right: "right"
+            right: "right",
+            formatter: function (value) { //标签的格式化工具。
+                return Math.pow(10, value).toFixed(2)
+            }
         },
         geo: {
             // 类型
