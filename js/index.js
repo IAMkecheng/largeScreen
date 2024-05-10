@@ -44,7 +44,7 @@ function updateData() {
     updateOverallValues(overall_data['整体情况-一季度加总'][0])
 
     let data = overall_data['整体情况-一季度各月份']
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'],
+    let headers = ['交易总金额', '交易总笔数', '客单价', '月均营业额', '单店交易笔数'],
         names = ['亿元', '万笔', '元', '万元', '笔']
     for (let j = 0; j < headers.length; j++) {
         let arr = [], arr_rate_2023 = [], arr_rate_2019 = []
@@ -134,8 +134,8 @@ function updateData() {
             arr.push({
                 name: data[i]['一级分类'],
                 xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
-                yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
-                rate: data[i]['笔均交易金额较2023年同比增长率']
+                yValue: getFormatValues('客单价', data[i]['客单价']),
+                rate: data[i]['客单价较2023年同比增长率']
             })
         }
     }
@@ -219,13 +219,13 @@ function getFormatValues(name, value) {
         case '交易总笔数':
             format_value = (value / 10000)
             return format_value;
-        case '笔均交易金额':
+        case '客单价':
             format_value = (value)
             return format_value;
-        case '店均交易金额':
+        case '月均营业额':
             format_value = (value / 10000)
             return format_value;
-        case '店均交易笔数':
+        case '单店交易笔数':
             format_value = (value)
             return format_value;
     }
@@ -238,17 +238,17 @@ function formatValues(name, value) {
         case '交易总笔数':
             if (value < 0.005) return value.toFixed(4) + "万笔";
             return value.toFixed(2) + "万笔";
-        case '笔均交易金额':
+        case '客单价':
             return value.toFixed(2) + "元";
-        case '店均交易金额':
+        case '月均营业额':
             if (value < 0.005) return value.toFixed(4) + "万元";
             return value.toFixed(2) + "万元";
-        case '店均交易笔数':
+        case '单店交易笔数':
             return value.toFixed(2) + "笔";
     }
 }
 function updateOverallValues(data) {
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'], color = '#FF0000'
+    let headers = ['交易总金额', '交易总笔数', '客单价', '月均营业额', '单店交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
         document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-all #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
@@ -274,7 +274,7 @@ function updateOverallValues(data) {
 
 }
 function updateAreaValues(data, area) {
-    let headers = ['交易总金额', '交易总笔数', '笔均交易金额', '店均交易金额', '店均交易笔数'], color = '#FF0000'
+    let headers = ['交易总金额', '交易总笔数', '客单价', '月均营业额', '单店交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
         document.querySelector("#data-t-area #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-area #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
@@ -461,8 +461,6 @@ $(function () {
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         // 获取已激活的标签页的名称
         var activeTab = $(e.target).text();
-        if (activeTab == '客单价') activeTab = '笔均交易金额'
-        if (activeTab == '月营业额') activeTab = '店均交易金额'
         current_indicator_global = activeTab
         // 获取前一个激活的标签页的名称
         var previousTab = $(e.relatedTarget).text();
@@ -741,8 +739,8 @@ function drawMap(id, data) {
                 area_arr.push({
                     name: data[i]['一级分类'],
                     xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
-                    yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
-                    rate: data[i]['笔均交易金额较2023年同比增长率']
+                    yValue: getFormatValues('客单价', data[i]['客单价']),
+                    rate: data[i]['客单价较2023年同比增长率']
                 })
             }
         }
@@ -1180,7 +1178,7 @@ function drawRank(data) {
                         + area_arr[index].name
                         + '</div>'
                         + '交易总金额：' + formatValues('交易总金额', area_arr[index].xValue) + '<br>'
-                        + '笔均交易金额：' + formatValues('笔均交易金额', area_arr[index].yValue) + '<br>'
+                        + '客单价：' + formatValues('客单价', area_arr[index].yValue) + '<br>'
                         + '同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
                 }
             },
@@ -1731,7 +1729,7 @@ function drawScatterplot(data) {
                     + data[index].name
                     + '</div>'
                     + '交易总金额：' + formatValues('交易总金额', data[index].xValue) + '<br>'
-                    + '笔均交易金额：' + formatValues('笔均交易金额', data[index].yValue) + '<br>'
+                    + '客单价：' + formatValues('客单价', data[index].yValue) + '<br>'
                     + '同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
             }
         },
@@ -1759,12 +1757,12 @@ function drawScatterplot(data) {
         },
         yAxis: {
             type: 'value',
-            name: '笔均交易金额/元',
+            name: '客单价/元',
             nameLocation: 'end',
             nameGap: 20,
             nameTextStyle: {
                 fontSize: 16,
-                padding: [0, 0, 0, 30]// 四个数字分别为上右下左与原位置距离
+                padding: [0, 0, 0, 0]// 四个数字分别为上右下左与原位置距离
             },
             splitLine: {
                 show: false
