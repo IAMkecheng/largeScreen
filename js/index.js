@@ -135,7 +135,7 @@ function updateData() {
                 name: data[i]['一级分类'],
                 xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
                 yValue: getFormatValues('客单价', data[i]['客单价']),
-                rate: data[i]['客单价较2023年同比增长率']
+                rate: data[i]['交易总金额较2023年同比增长率']
             })
         }
     }
@@ -740,7 +740,7 @@ function drawMap(id, data) {
                     name: data[i]['一级分类'],
                     xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
                     yValue: getFormatValues('客单价', data[i]['客单价']),
-                    rate: data[i]['客单价较2023年同比增长率']
+                    rate: data[i]['交易总金额较2023年同比增长率']
                 })
             }
         }
@@ -791,8 +791,8 @@ function drawMap(id, data) {
                         + area_arr[index].name
                         + '</div>'
                         + '交易总金额：' + formatValues('交易总金额', area_arr[index].xValue) + '<br>'
-                        + '笔均交易金额：' + formatValues('笔均交易金额', area_arr[index].yValue) + '<br>'
-                        + '同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
+                        + '客单价：' + formatValues('客单价', area_arr[index].yValue) + '<br>'
+                        + '交易总金额同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
                 }
             },
             visualMap: [
@@ -1136,8 +1136,8 @@ function drawRank(data) {
                 area_arr.push({
                     name: data[i]['城区'],
                     xValue: getFormatValues('交易总金额', data[i]['交易总金额']),
-                    yValue: getFormatValues('笔均交易金额', data[i]['笔均交易金额']),
-                    rate: data[i]['笔均交易金额较2023年同比增长率']
+                    yValue: getFormatValues('客单价', data[i]['客单价']),
+                    rate: data[i]['交易总金额较2023年同比增长率']
                 })
             }
         }
@@ -1179,7 +1179,7 @@ function drawRank(data) {
                         + '</div>'
                         + '交易总金额：' + formatValues('交易总金额', area_arr[index].xValue) + '<br>'
                         + '客单价：' + formatValues('客单价', area_arr[index].yValue) + '<br>'
-                        + '同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
+                        + '交易总金额同比' + (area_arr[index].rate > 0 ? '增加' : '下降') + '：' + area_arr[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
                 }
             },
             visualMap: [
@@ -1730,7 +1730,7 @@ function drawScatterplot(data) {
                     + '</div>'
                     + '交易总金额：' + formatValues('交易总金额', data[index].xValue) + '<br>'
                     + '客单价：' + formatValues('客单价', data[index].yValue) + '<br>'
-                    + '同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
+                    + '交易总金额同比' + (data[index].rate > 0 ? '增加' : '下降') + '：' + data[index].rate.toLocaleString('zh-CN', options_percent) + '<br>';
             }
         },
         xAxis: {
