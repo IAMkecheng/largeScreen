@@ -250,7 +250,7 @@ function formatValues(name, value) {
 function updateOverallValues(data) {
     let headers = ['交易总金额', '交易总笔数', '客单价', '月均营业额', '单店交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
-        document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
+        document.querySelector("#data-t-all #td" + i + " #v0").innerHTML = getFormatValues(headers[i], +data[headers[i]]).toFixed(2)//formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-all #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
         if (data[headers[i] + '较2023年同比增长率'] > 0) {
             color = '#FF0000'
@@ -260,10 +260,11 @@ function updateOverallValues(data) {
             color = '#FFFFFF'
         }
         document.querySelector("#data-t-all #td" + i + " #v1").style.color = color
+
         document.querySelector("#data-t-all #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
-        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+        if (data[headers[i] + '较2019年同比增长率'] > 0) {
             color = '#FF0000'
-        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+        } else if (data[headers[i] + '较2019年同比增长率'] < 0) {
             color = '#00FF00'
         } else {
             color = '#FFFFFF'
@@ -276,7 +277,7 @@ function updateOverallValues(data) {
 function updateAreaValues(data, area) {
     let headers = ['交易总金额', '交易总笔数', '客单价', '月均营业额', '单店交易笔数'], color = '#FF0000'
     for (let i = 0; i < 5; i++) {
-        document.querySelector("#data-t-area #td" + i + " #v0").innerHTML = formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
+        document.querySelector("#data-t-area #td" + i + " #v0").innerHTML = getFormatValues(headers[i], +data[headers[i]]).toFixed(2)//formatValues(headers[i], getFormatValues(headers[i], +data[headers[i]]))
         document.querySelector("#data-t-area #td" + i + " #v1").innerHTML = (+data[headers[i] + '较2023年同比增长率']).toLocaleString('zh-CN', options_percent)
         if (data[headers[i] + '较2023年同比增长率'] > 0) {
             color = '#FF0000'
@@ -287,9 +288,9 @@ function updateAreaValues(data, area) {
         }
         document.querySelector("#data-t-area #td" + i + " #v1").style.color = color
         document.querySelector("#data-t-area #td" + i + " #v2").innerHTML = (+data[headers[i] + '较2019年同比增长率']).toLocaleString('zh-CN', options_percent)
-        if (data[headers[i] + '较2023年同比增长率'] > 0) {
+        if (data[headers[i] + '较2019年同比增长率'] > 0) {
             color = '#FF0000'
-        } else if (data[headers[i] + '较2023年同比增长率'] < 0) {
+        } else if (data[headers[i] + '较2019年同比增长率'] < 0) {
             color = '#00FF00'
         } else {
             color = '#FFFFFF'
